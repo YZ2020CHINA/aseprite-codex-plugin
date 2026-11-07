@@ -1,0 +1,4 @@
+interface:
+  display_name: "Aseprite 像素画"
+  short_description: "通过本机 Aseprite 创建与修改像素画、可编辑图层、逐帧动画和精灵表"
+  default_prompt: "使用 $aseprite 在 Aseprite 中制作一个 32×32 像素角色，保存工程并给我预览。"

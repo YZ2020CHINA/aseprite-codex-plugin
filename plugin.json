@@ -1,0 +1,16 @@
+{
+  "$schema":"https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name":"aseprite-local","version":"1.0.0",
+  "license":"MIT",
+  "description":"使用本机 Aseprite 创建像素画、编辑当前画布、制作动画并导出精灵表。",
+  "author":{"name":"YZ2020CHINA"},
+  "extensions":{"com.openai":{"interface":{
+    "displayName":"Aseprite 像素画工作室",
+    "shortDescription":"连接本机 Aseprite，绘制像素画、编辑图层与动画",
+    "longDescription":"包含8个MCP工具、Aseprite Lua桥接、中文skill。可选连接独立安装的 N7z/aseprite-live 实时预览。支持当前文档操作、像素画创作、GIF/精灵表导出。需要Aseprite 1.3+与Python 3.12+。",
+    "developerName":"YZ2020CHINA","category":"Creativity",
+    "capabilities":["Read","Write"],"brandColor":"#7D929E",
+    "logo":"./assets/aseprite.png","composerIcon":"./assets/aseprite.png",
+    "defaultPrompt":["用 Aseprite 画一个 32×32 的像素角色，保存可编辑工程并预览。","连接 Aseprite，检查当前画布的图层和动画帧。"]
+  }}}
+}

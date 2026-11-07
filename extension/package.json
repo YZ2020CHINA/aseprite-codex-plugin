@@ -1,0 +1,5 @@
+{
+  "name":"codex-aseprite-bridge","displayName":"Codex Aseprite Bridge","description":"Local Codex connection for the active Aseprite document.",
+  "version":"1.0.0","author":{"name":"YZ2020CHINA"},
+  "contributes":{"scripts":[{"path":"./main.lua"}]}
+}

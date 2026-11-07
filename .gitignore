@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.state/
+outputs/
+dist/
+plugins/
+assets/
+project-blocks/
+test-relocation/
+config.json
+*.response.json*
+*.request.json*
+*.log
