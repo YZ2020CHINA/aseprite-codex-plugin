@@ -37,14 +37,16 @@ class Distribution(unittest.TestCase):
         command = subprocess.run([sys.executable, '-X', 'utf8', str(moved / 'scripts/build_plugin.py')],
             env=env, capture_output=True, text=True, encoding='utf-8', timeout=30)
         self.assertEqual(command.returncode, 0, command.stderr)
-        cfg = read_json(moved / 'plugins/aseprite-local/mcp.json')['mcpServers']['aseprite']
-        self.assertEqual(cfg['env']['ASEPRITE_MCP_HOME'], str(moved.resolve()))
-        env.update(cfg['env'])
+        plugin = moved / 'plugins/aseprite-local'
+        cfg = read_json(plugin / 'mcp.json')['mcpServers']['aseprite']
+        self.assertEqual(cfg['command'], 'cmd.exe')
+        self.assertEqual(set(cfg), {'type', 'command', 'args', 'cwd'})
+        self.assertIn(str(moved.resolve()), (plugin / 'launch-mcp.cmd').read_text(encoding='utf-8'))
         requests = [{'jsonrpc': '2.0', 'id': 1, 'method': 'initialize'},
                     {'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'},
                     {'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call',
                      'params': {'name': 'aseprite_status', 'arguments': {}}}]
-        result = subprocess.run([cfg['command'], *cfg['args']], env=env, capture_output=True,
+        result = subprocess.run([cfg['command'], *cfg['args']], env=env, cwd=plugin, capture_output=True,
             input=''.join(json.dumps(r) + '\n' for r in requests), text=True, encoding='utf-8', timeout=20)
         self.assertEqual(result.returncode, 0, result.stderr)
         replies = [json.loads(line) for line in result.stdout.splitlines()]

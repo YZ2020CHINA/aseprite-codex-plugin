@@ -16,6 +16,17 @@ RUNTIME = ('plugin.json', 'server.py', 'viewer_control.py', 'viewer_process.py',
 DIRECTORIES = ('lua', 'extension', 'skills')
 
 
+def write_launcher(plugin, command, args, env=None):
+    """Codex plugin stdio servers must use a bare executable, so absolute paths live in a launcher."""
+    def quote(value):
+        return '"' + str(value).replace('%', '%%') + '"'
+    lines = ['@echo off', 'chcp 65001 >nul']
+    lines += ['set "{}={}"'.format(key, str(value).replace('%', '%%')) for key, value in (env or {}).items()]
+    lines.append(' '.join(quote(part) for part in [command, *args]))
+    (plugin / 'launch-mcp.cmd').write_text('\r\n'.join(lines) + '\r\n', encoding='utf-8')
+    return {'type': 'stdio', 'command': 'cmd.exe', 'args': ['/d', '/s', '/c', 'call', './launch-mcp.cmd'], 'cwd': './'}
+
+
 def source_files():
     files = [ROOT / f for f in (*RUNTIME, 'README.md', 'install-plugin.ps1', 'uninstall-plugin.ps1', '.gitignore')]
     for directory in (*DIRECTORIES, 'scripts', 'tests'):
@@ -45,9 +56,9 @@ def build(python):
         target = plugin / source.relative_to(ROOT)
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
-    write_json(plugin / 'mcp.json', {'mcpServers': {'aseprite': {'type': 'stdio', 'command': str(python),
-        'args': ['-X', 'utf8', '-s', str(plugin / 'server.py')], 'env': {'ASEPRITE_MCP_HOME': str(ROOT)},
-        'startup_timeout_sec': 30, 'tool_timeout_sec': 90}}})
+    write_json(plugin / 'mcp.json', {'$schema': 'https://agent-plugins.org/schemas/1.0.0/mcp.schema.json',
+        'mcpServers': {'aseprite': write_launcher(plugin, python, ['-X', 'utf8', '-s', str(plugin / 'server.py')],
+                                                  {'ASEPRITE_MCP_HOME': str(ROOT)})}})
     write_json(ROOT / '.agents/plugins/marketplace.json', {'name': 'aseprite-local-market',
         'interface': {'displayName': 'Aseprite 本地插件'}, 'plugins': [{'name': 'aseprite-local',
         'source': {'source': 'local', 'path': './plugins/aseprite-local'},
